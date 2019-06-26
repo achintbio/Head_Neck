@@ -1,0 +1,8 @@
+name: "Head And Neck Cancer Project"
+navbar:
+  title: "Project steps"
+  left:
+    - text: "Home"
+      href: index.html
+    - text: "About"
+      href: Data_Processing.html
