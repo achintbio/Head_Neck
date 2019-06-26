@@ -2,7 +2,7 @@
 title: "TreatmentTolerability"
 author: "Achintya Varma"
 date: "5/17/2019"
-output:
+output: github_document
   word_document: default
   html_document: default
 ---
