@@ -103,7 +103,6 @@ write.csv(output_csv,"DSS1.csv")
 #regression_output(coxph(surv_object~treatINT,data=SurvivalHND_trt))
 rownames(reg_output_df) <- c("Treatment Interruption(Yes vs No)","Hypopharynx","Larynx","Oral Cavity","Nasopharynx","Stage III/IV","Ecog1","ECOG II/III/IV","Age 80+","CCI 7+")
 
-suv_fits1 <- lapply(suv_fits,function(x){names(x)<-c("TI","Site","stage","ecog","age","CCI")}) # rename all the nested lists
 
 
 
@@ -113,11 +112,11 @@ Below is the code to plot all the Kaplan Meier curves using the "suv_fits" creat
 
 
 ```{r}
-plots_listLCR <- lapply(suv_fits1$LCRdate,function(x){ggsurvplot(x,pval=T,xlab="Time(years)",ylab="Locoregional Control",data=Cov_Surv)})
+plots_listLCR <- lapply(suv_fits$LCRdate,function(x){ggsurvplot(x,pval=T,xlab="Time(years)",ylab="Locoregional Control",data=Cov_Surv)})
 
-plots_listOS <- lapply(suv_fits1$Living_date,function(x){ggsurvplot(x,pval=T,xlab="Time(years)",ylab="Overall Survival",data=Cov_Surv)})
+plots_listOS <- lapply(suv_fits$Living_date,function(x){ggsurvplot(x,pval=T,xlab="Time(years)",ylab="Overall Survival",data=Cov_Surv)})
 
-plots_list_DS <- lapply(suv_fits1$DC,function(x){ggsurvplot(x,pval=T,xlab="Time(years)",ylab = "Disease Specific Survival",data=Cov_Surv)})
+plots_list_DS <- lapply(suv_fits$DC,function(x){ggsurvplot(x,pval=T,xlab="Time(years)",ylab = "Disease Specific Survival",data=Cov_Surv)})
 
 c(plots_list_DS,plots_listLCR,plots_listOS) <- lapply(c(plots_list_DS,plots_listOS,plots_list_DS),function(x){names(x)<-c("TI","Site","stage","ecog","age","CCI")})
 ```
