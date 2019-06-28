@@ -7,7 +7,7 @@ output:
   word_document: default
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE} 
 knitr::opts_chunk$set(echo = TRUE)
 suppressMessages(require(knitr))
 suppressMessages(require(readxl))
@@ -26,24 +26,19 @@ We start the analysis by testing whether any of our covariates are correlated to
 ```{r Data_Processing}
 HND621 <- read_excel("~/Desktop/CapstoneRevised/HND621.xlsx")
 
-f.test<-function(x){
+f.test <- function(x){
   if(length(unique(x[[1]])) >2 | length(unique(x[[2]]))>2){
     set.seed(1234)
-    f<-fisher.test(x[[1]],x[[2]],simulate.p.value=T)
+    f <- fisher.test(x[[1]],x[[2]],simulate.p.value=T)
   }
   else{
-    f<-fisher.test(x[[1]],x[[2]])
+    f <- fisher.test(x[[1]],x[[2]])
   }
   return(round(f$p.value,4))
 } 
 
-names_add<-function(x){
-  null<-""
-  for(y in x){
-    
-  }
-}
-fisher_names<-function(x){
+
+fisher_names <- function(x){
   stringr = ""
   for(i in x){
   
@@ -53,31 +48,31 @@ fisher_names<-function(x){
 }
 Variables<-as.data.frame(cbind(HND621$record_id,HND621$site,HND621$ecog,HND621$cci_excel,HND621$stagefinal8,HND621$interruption,HND621$age_at_rt_start))
 
-colnames(Variables)<-c("rec_id","site","ecog","cci","stage","interruption","age")
+colnames(Variables) <- c("rec_id","site","ecog","cci","stage","interruption","age")
  
-names_c<-colnames(Variables)
+names_c <- colnames(Variables)
 # code to convert site numbers to site list
 site_names<-list("1"="Larynx","2"="Lip+Oral","3"="Major_Salivary_Glands","4"="Nasopharynx","5"="Oropharynx","6"="Hypopharynx","7"="Nasal_Sinuses")
 
-Variables<-cbind(Variables,t(as.data.frame(site_names[Variables$site]))) #uses the list above to convert the "numeric" values of the tumor sites to character type
+Variables <- cbind(Variables,t(as.data.frame(site_names[Variables$site]))) #uses the list above to convert the "numeric" values of the tumor sites to character type
                  
-colnames(Variables)<-c(names_c,"site_name")
+colnames(Variables) <- c(names_c,"site_name")
 #remove Major Salivary Glands and Nasal Sinuse
-Variables1<-Variables[Variables$site_name!="Major_Salivary_Glands",]
-Variables<-Variables1[Variables1$site_name!="Nasal_Sinuses",]
-Variables_f<-Variables # Create a copy of 
-Variables$site_name<-droplevels(Variables)$site_name #drops tumor sites we are not interested in analyzing
-Variables$site_name<-relevel(Variables$site_name,ref="Oropharynx") #Sets the reference to the biggest site in our dataset
-Variables$cci<-ifelse(Variables$cci>6,7,ifelse(Variables$cci>5,6,5)) #Cci greater than 7 is counted as one category
-Variables$ecog<-ifelse(Variables$ecog>1,2,ifelse(Variables$ecog>0,1,0))#Ecog higher than 2 is counted as a single score
+Variables1 <- Variables[Variables$site_name!="Major_Salivary_Glands",]
+Variables <- Variables1[Variables1$site_name!="Nasal_Sinuses",]
+Variables_f <- Variables # Create a copy of 
+Variables$site_name <- droplevels(Variables)$site_name #drops tumor sites we are not interested in analyzing
+Variables$site_name <- relevel(Variables$site_name,ref="Oropharynx") #Sets the reference to the biggest site in our dataset
+Variables$cci <- ifelse(Variables$cci>6,7,ifelse(Variables$cci>5,6,5)) #Cci greater than 7 is counted as one category
+Variables$ecog <- ifelse(Variables$ecog>1,2,ifelse(Variables$ecog>0,1,0))#Ecog higher than 2 is counted as a single score
 
-Variables$age_cat<-ifelse(Variables$age>80,1,0) #Categorizing age into 80+ vs 70-80
-Variables$stage<-ifelse(Variables$stage>1,1,0)
-Variables<-Variables[,c(1,3,4,5,6,8,9)] #Drops "Site" and "age" as we are interested in categorizing age and the character values of site
+Variables$age_cat <- ifelse(Variables$age>80,1,0) #Categorizing age into 80+ vs 70-80
+Variables$stage <- ifelse(Variables$stage>1,1,0)
+Variables <- Variables[,c(1,3,4,5,6,8,9)] #Drops "Site" and "age" as we are interested in categorizing age and the character values of site
 head(Variables)
-Variables[,2:ncol(Variables)]<-apply(Variables[,2:ncol(Variables)],2,as.character) #convert all the predictors to characters as it is helpful to have characters to conduct logistic regressions
+Variables[,2:ncol(Variables)] <- apply(Variables[,2:ncol(Variables)],2,as.character) #convert all the predictors to characters as it is helpful to have characters to conduct logistic regressions
 
-#a_tox<-a_tox[a_tox$rec_id %in% Variables$rec_id,]# Make sure the data frame with all our response variables has the same rows as our dataframes with all the predictors, a_tox was defined in a different .r file from the same project and is in the workspace
+#a_tox <- a_tox[a_tox$rec_id %in% Variables$rec_id,]# Make sure the data frame with all our response variables has the same rows as our dataframes with all the predictors, a_tox was defined in a different .r file from the same project and is in the workspace
 ```
 The first correlation is f_rt_site, it is testing whether there is an association between a patient having a tumor in any one of the sites listed and the treatment they had to undergo, a p-value of 2.735e-11 is highly significant and shows that the two variables have a very high likelihood of being associated. For the sake of obtaining unbiased estimates of our regression it is advisable not to use both sites and radiation intent in building any models.
 mAge and Site are not correlated with a p value of 0.3182 for the fisher test. 
@@ -89,25 +84,25 @@ This is for the convenience of the programmer so you can skip reading the follow
 ```{r}
 
 
-cov_mat<-matrix(replicate(0,36),nrow=6,ncol=6)
-cov_mat_names<-matrix(replicate(0,36),nrow=6,ncol=6)
+cov_mat <- matrix(replicate(0,36),nrow=6,ncol=6)
+cov_mat_names <- matrix(replicate(0,36),nrow=6,ncol=6)
 
-combos<-combn(Variables[,2:ncol(Variables)],2)
-combos_df<-as.data.frame(combos)
+combos <- combn(Variables[,2:ncol(Variables)],2)
+combos_df <- as.data.frame(combos)
 
-combos_name<-combn(Variables[,2:ncol(Variables)],2,function(x){names(x)})
-combos_name<-apply(combos_name,2,fisher_names)
-#combos_t<-combn(Variables[,2:ncol(Variables)],5)
-combos_p<-lapply(combos_df,f.test)
-names(combos_p)<-combos_name
-cov_mat[lower.tri(cov_mat)]<-combos_p
-cov_mat_names[lower.tri(cov_mat)]<-combos_name
-colnames(cov_mat)<-c("ecog","cci","stage","interruption","site_name","age_cat")
-rownames(cov_mat)<-colnames(cov_mat)
+combos_name <- combn(Variables[,2:ncol(Variables)],2,function(x){names(x)})
+combos_name <- apply(combos_name,2,fisher_names)
+#combos_t <- combn(Variables[,2:ncol(Variables)],5)
+combos_p <- lapply(combos_df,f.test)
+names(combos_p) <- combos_name
+cov_mat[lower.tri(cov_mat)] <- combos_p
+cov_mat_names[lower.tri(cov_mat)] <- combos_name
+colnames(cov_mat) <- c("ecog","cci","stage","interruption","site_name","age_cat")
+rownames(cov_mat) <- colnames(cov_mat)
 
 
-#var_mod<-inner_join(Variables,a_tox,by="rec_id")
-#musc_glm_mv<-glm(musc~site_name+age_cat,data=var_mod,family="binomial")
+#var_mod <- inner_join(Variables,a_tox,by="rec_id")
+#musc_glm_mv <- glm(musc~site_name+age_cat,data=var_mod,family="binomial")
 #print(pf_df)
 
 ```
