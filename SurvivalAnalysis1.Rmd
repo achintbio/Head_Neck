@@ -1,0 +1,131 @@
+---
+title: "Survival"
+author: "Achintya Varma"
+date: "6/1/2019"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+All the functions used in the analysis are defined below in the first chunk:
+```{r}
+surv_obj_repeat<-function(x,y){return(Surv(time = x,event=y))}
+
+risk_table_func<-function(x){return(ggsurvtable(x,break.time.by=0.5,risk.table.type="percentage"))}
+
+res_cox<-coxph(surv_obj~Site,data=x)
+cox_asummption_check<-function(x){
+  surv_obj<- Surv(time = x$date_diff, event = x$censoring)
+return(list(cox.zph(res_cox),res_cox))
+}
+
+regression_output<-function(x){s<-summary(x)$conf.int
+                              s1<-summary(x)$coefficients
+                              return(cbind(as.data.frame(s),as.data.frame(s1)))
+                              }
+
+```
+
+Following Code uses the data processing step for the survival analysis part of the analysis and creates the survival objects needed for the analysis of the project
+
+```{r DataProcessing-Survival_Outcomes}
+require(survminer)
+require(survival)
+
+HNDCleanSurv<-HNDCleanSurvival
+HNDCleanSurv$dss_cens<-ifelse(HNDCleanSurv$dss=="Alive or did not die from HN cancer",0,1)
+#table(HNDCleanSurvival$dss_cens,HNDCleanSurvival$dss)
+HNDCleanSurv$LivingC<-ifelse(HNDCleanSurv$Living=="Yes (alive)",0,1)
+#table(HNDCleanSurvival$LivingC,HNDCleanSurvival$Living)
+HNDCleanSurv$LCRC<-ifelse(HNDCleanSurv$LCR=="Yes",0,1)
+#table(HNDCleanSurvival$LCRC,HNDCleanSurvival$LCR)
+censored_events<-as.data.frame(cbind(HNDCleanSurv$`Record ID`,HNDCleanSurv$dss_cens,HNDCleanSurv$LivingC,HNDCleanSurv$LCRC))
+
+colnames(censored_events)<-c("rec_id",colnames(HNDCleanSurv[,9:11]))
+
+SurvivalHND_sites<-as.data.frame(SurvivalHND_Sites)
+HNDCleanSurv<-HNDCleanSurv[HNDCleanSurv$`Record ID` %in% SurvivalHND_stage$record_id,]
+
+HNDCleanSurvivalD<-apply(HNDCleanSurv[,6:8],2,function(x){as.Date(x,format="%m/%d/%Y")})
+dates_list<-colnames(HNDCleanSurvivalD)
+
+HNDCleanSurvivalD<-apply(HNDCleanSurv[,5:8],2,function(x){as.Date.POSIXct(x,tz="America/New_York",format = "%m/%d/%Y")})
+
+date_diff<-apply(HNDCleanSurvivalD[,2:4],2,function(x){x -HNDCleanSurvivalD[,1] })
+date_diff<-date_diff/365
+date_diff<-as.data.frame(cbind(HNDCleanSurv$`Record ID`,date_diff))
+colnames(date_diff)<-c("rec_id",colnames(date_diff[,2:4]))
+
+survival_master<-inner_join(date_diff,censored_events,by="rec_id")
+#survival_master<-survival_master[,c(1,2,3,4,7,6,5)]
+
+```
+The following chunk creates the covariates for the survival analysis.
+```{r Data Processing- Covariates}
+
+Cov_Surv<-as.data.frame(cbind(SurvivalHND$`Record ID`,SurvivalHND$`Treatment interrupted`,SurvivalHND$`Site Multiple Choice-Drop Down (only one choice)`,SurvivalHND$`Stage for Cox Regression`,SurvivalHND$`ECOG for Cox Regression`,SurvivalHND$`Age for cox`,SurvivalHND$`CCI for Cox Regression`))
+
+colnames(Cov_Surv)<-c("rec_id","trt","Site","stage","ecog","age","CCI")
+
+Cov_Surv<-Cov_Surv[Cov_Surv$rec_id %in% survival_master$rec_id,]
+
+```
+The following chunk is needed for the creation of the objects needed for survival analysis. Function "reg_output" prints out the desired format we need for the project to print it in .csv file. 
+
+```{r Creation of Objects}
+#survival_master<-survival_master[survival_master$rec_id %in% SurvivalHND_Sites$record_id,]
+surv_objs<-mapply(FUN=surv_obj_repeat,x=survival_master[,2:4],y=survival_master[,5:7])
+
+ # Function creates survival objects with censoring)})
+Cov_Surv<-Cov_Surv[Cov_Surv$rec_id %in% survival_master$rec_id,]
+suv_fits<-lapply(surv_objs,function(y){lapply(Cov_Surv[,2:ncol(Cov_Surv)],function(x){surv_fit(y~x,data=Cov_Surv)})})
+Cov_Surv$Site<-relevel(Cov_Surv$Site,ref="Oropharynx")
+
+reg_output_l<-lapply(Cov_Surv[,2:7],function(x){regression_output(coxph(surv_objs$DC~x))}) # prepares all the outputs for DC for univariate 
+survival_master2<-survival_master[survival_master$rec_id %in% data_mv$record_id,]
+surv_objs2<-mapply(FUN=surv_obj_repeat,x = survival_master2[,2:4],y = survival_master2[,5:7])
+names(surv_objs2)<-names(surv_objs)
+
+reg_output_df<-do.call("rbind",reg_output_l)
+reg_output_df<-reg_output_df[-c(5,6),]
+out1<-regression_output(coxph(surv_objs$DC ~Site +stage + ecog, data = Cov_Surv,na.action = na.omit))
+
+ out2<-regression_output(coxph(surv_objs$LCRdate ~ ecog + trt + Site,na.action = na.omit, data = Cov_Surv))
+ 
+reg_output_mv<-regression_output(coxph(surv_objs$Living_date ~ stage + Site+age,data=Cov_Surv,na.action = na.omit))
+
+output_csv<-rbind(reg_output_df,reg_output_mv)
+output_csv<-round(output_csv,2)
+write.csv(output_csv,"DSS1.csv")
+#regression_output(coxph(surv_object~treatINT,data=SurvivalHND_trt))
+rownames(reg_output_df)<-c("Treatment Interruption(Yes vs No)","Hypopharynx","Larynx","Oral Cavity","Nasopharynx","Stage III/IV","Ecog1","ECOG II/III/IV","Age 80+","CCI 7+")
+
+suv_fits1<-lapply(suv_fits,function(x){names(x)<-c("TI","Site","stage","ecog","age","CCI")}) # rename all the nested lists 
+
+
+plots_listLCR<-lapply(suv_fits$LCRdate,function(x){ggsurvplot(x,pval=T,xlab="Time(years)",ylab="Locoregional Control",data=Cov_Surv)})
+suv_fit
+plots_listOS<-lapply(suv_fits$Living_date,function(x){ggsurvplot(x,pval=T,xlab="Time(years)",ylab="Overall Survival",data=Cov_Surv)})
+plots_list_DS<-lapply(suv_fits$DC,function(x){ggsurvplot(x,pval=T,xlab="Time(years)",ylab = "Disease Specific Survival",data=Cov_Surv)})
+
+legends.labs_list<-c(c("Treatment Interruptions(YES=1, NO=0)",c("Hypopharynx","Larynx","Oral Cavity","Nasopharynx","Oropharynx"),c("Stage I or Stage II","Stage III or Stage IV"),c("Ecog 0","Ecog 1","Ecog 2/3/4"),c("70-80","80+"),c("CCI= 5/6","CCI=7+"))
+                     
+
+names(plots_list_DS)<-c("TI","Site","stage","ecog","age","CCI")
+#0.2,0.00013,<0.00001,0.00068,0.1,0.39
+g<-plots_list_DS$TI + theme_survminer(legend.position=c(0.2,0.2))
+reg_ageOS<-regression_output(coxph(surv_object~age_cat,data=Survival_Age))
+
+
+```
+
+The code below generates risk tables or "actuarial tables" for each of the three events we are interested in
+```{r}
+
+lcr<-lapply(suv_fits$LCRdate,risk_table_func)
+OS<-lapply(suv_fits$Living_date,risk_table_func)
+DS<-lapply(suv_fits$DC,risk_table_func)
+
+```
+
