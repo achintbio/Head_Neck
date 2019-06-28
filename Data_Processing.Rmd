@@ -42,9 +42,9 @@ fisher_names <- function(x){
   blankr = ""
   for(i in x){
   
-    stringr = paste(stringr, " ", i)
+    null_str <- paste(null_str, " ", i)
   }
-  return(stringr)
+  return(null_str)
 }
 Variables<-as.data.frame(cbind(HND621$record_id,HND621$site,HND621$ecog,HND621$cci_excel,HND621$stagefinal8,HND621$interruption,HND621$age_at_rt_start))
 
