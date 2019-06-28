@@ -39,7 +39,7 @@ f.test <- function(x){
 
 
 fisher_names <- function(x){
-  stringr = ""
+  blankr = ""
   for(i in x){
   
     stringr = paste(stringr, " ", i)
