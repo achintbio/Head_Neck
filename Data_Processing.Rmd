@@ -7,7 +7,7 @@ output:
   word_document: default
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE} 
 knitr::opts_chunk$set(echo = TRUE)
 suppressMessages(require(knitr))
 suppressMessages(require(readxl))
@@ -26,20 +26,25 @@ We start the analysis by testing whether any of our covariates are correlated to
 ```{r Data_Processing}
 HND621 <- read_excel("~/Desktop/CapstoneRevised/HND621.xlsx")
 
-f.test<-function(x){
+f.test <- function(x){
   if(length(unique(x[[1]])) >2 | length(unique(x[[2]]))>2){
     set.seed(1234)
-    f<-fisher.test(x[[1]],x[[2]],simulate.p.value=T)
+    f <- fisher.test(x[[1]],x[[2]],simulate.p.value=T)
   }
   else{
-    f<-fisher.test(x[[1]],x[[2]])
+    f <- fisher.test(x[[1]],x[[2]])
   }
   return(round(f$p.value,4))
 } 
 
 
+<<<<<<< HEAD:Data_Processing.Rmd
 fisher_names<-function(x){
   null_str = ""
+=======
+fisher_names <- function(x){
+  blankr = ""
+>>>>>>> ab5cd2b3955e053e035214fffd3f91f267af2545:Data_Processing.Rmd
   for(i in x){
   
     null_str <- paste(null_str, " ", i)
@@ -60,8 +65,12 @@ colnames(Variables) <- c(names_c,"site_name")
 #remove Major Salivary Glands and Nasal Sinuse
 Variables1 <- Variables[Variables$site_name!="Major_Salivary_Glands",]
 Variables <- Variables1[Variables1$site_name!="Nasal_Sinuses",]
+<<<<<<< HEAD:Data_Processing.Rmd
 Variables_f <- Variables # Create a copy of the original file before the next steps
 
+=======
+Variables_f <- Variables # Create a copy of 
+>>>>>>> ab5cd2b3955e053e035214fffd3f91f267af2545:Data_Processing.Rmd
 Variables$site_name <- droplevels(Variables)$site_name #drops tumor sites we are not interested in analyzing
 Variables$site_name <- relevel(Variables$site_name,ref="Oropharynx") #Sets the reference to the biggest site in our dataset
 Variables$cci <- ifelse(Variables$cci>6,7,ifelse(Variables$cci>5,6,5)) #Cci greater than 7 is counted as one category
@@ -73,7 +82,7 @@ Variables <- Variables[,c(1,3,4,5,6,8,9)] #Drops "Site" and "age" as we are inte
 head(Variables)
 Variables[,2:ncol(Variables)] <- apply(Variables[,2:ncol(Variables)],2,as.character) #convert all the predictors to characters as it is helpful to have characters to conduct logistic regressions
 
-#a_tox<-a_tox[a_tox$rec_id %in% Variables$rec_id,]# Make sure the data frame with all our response variables has the same rows as our dataframes with all the predictors, a_tox was defined in a different .r file from the same project and is in the workspace
+#a_tox <- a_tox[a_tox$rec_id %in% Variables$rec_id,]# Make sure the data frame with all our response variables has the same rows as our dataframes with all the predictors, a_tox was defined in a different .r file from the same project and is in the workspace
 ```
 The first correlation is f_rt_site, it is testing whether there is an association between a patient having a tumor in any one of the sites listed and the treatment they had to undergo, a p-value of 2.735e-11 is highly significant and shows that the two variables have a very high likelihood of being associated. For the sake of obtaining unbiased estimates of our regression it is advisable not to use both sites and radiation intent in building any models.
 mAge and Site are not correlated with a p value of 0.3182 for the fisher test. 
@@ -93,7 +102,11 @@ combos_df <- as.data.frame(combos)
 
 combos_name <- combn(Variables[,2:ncol(Variables)],2,function(x){names(x)})
 combos_name <- apply(combos_name,2,fisher_names)
+<<<<<<< HEAD:Data_Processing.Rmd
 #combos_t<-combn(Variables[,2:ncol(Variables)],5)
+=======
+#combos_t <- combn(Variables[,2:ncol(Variables)],5)
+>>>>>>> ab5cd2b3955e053e035214fffd3f91f267af2545:Data_Processing.Rmd
 combos_p <- lapply(combos_df,f.test)
 names(combos_p) <- combos_name
 cov_mat[lower.tri(cov_mat)] <- combos_p
@@ -102,8 +115,8 @@ colnames(cov_mat) <- c("ecog","cci","stage","interruption","site_name","age_cat"
 rownames(cov_mat) <- colnames(cov_mat)
 
 
-#var_mod<-inner_join(Variables,a_tox,by="rec_id")
-#musc_glm_mv<-glm(musc~site_name+age_cat,data=var_mod,family="binomial")
+#var_mod <- inner_join(Variables,a_tox,by="rec_id")
+#musc_glm_mv <- glm(musc~site_name+age_cat,data=var_mod,family="binomial")
 #print(pf_df)
 
 ```
