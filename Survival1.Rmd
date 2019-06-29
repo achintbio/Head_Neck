@@ -107,7 +107,7 @@ reg_output_df<-reg_output_df[-c(5,6),]
 #output_csv<-round(output_csv,2)
 #write.csv(output_csv,"DSS1.csv")
 #regression_output(coxph(surv_object~treatINT,data=SurvivalHND_trt))
-rownames(reg_output_df)<-c("Treatment Interruption(Yes vs No)","Hypopharynx","Larynx","Oral Cavity","Nasopharynx","Stage III/IV","Ecog1","ECOG II/III/IV","Age 80+","CCI 7+")
+rownames(reg_output_df)<-c("Treatment Interruption(Yes vs No)","Hypopharynx","Larynx","Oral Cavity","Nasopharyn","Stage III/IV","Ecog1","ECOG II/III/IV","Age 80+","CCI 7+")
 
 #names(suv_fits1)<-lapply(suv_fits,function(x){names(x)<-c("TI","Site","stage","ecog","age","CCI")}) # rename all the nested lists
 
