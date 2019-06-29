@@ -17,9 +17,9 @@ suppressMessages(require(permute))
 suppressMessages(require(gridExtra))
 suppressMessages(require(ggplot2))
   
-cox_asummption_check<-function(x){
-  surv_obj <- Surv(time = x$date_diff, event = x$censoring)
-  return(list(cox.zph(res_cox),res_cox))
+cox_asummption_check<-function(res_cox){
+  plot_x <- ggcoxdiagnostics(res_cox)
+  return(list(cox.zph(res_cox),plot_x))
 }
 
 regression_output<-function(x){s <- summary(x)$conf.int
