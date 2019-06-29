@@ -33,6 +33,9 @@ Following Code uses the data processing step for the survival analysis part of t
 
 ```{r DataProcessing-Survival_Outcomes}
 
+#HND621<-read_excel("~/Desktop/CapstoneRevised/HND621.xlsx")
+#HNDSurvivalAnalysis <- read_csv("~/Desktop/CapstoneRevised/HNDSurvivalAnalysis.csv")
+#HNDCleanSurvival <- read_excel("~/Desktop/HNDToxicity/HNDCleanSurvival.xlsx")
 
 HNDCleanSurv <- HNDCleanSurvival
 HNDCleanSurv$dss_cens <- ifelse(HNDCleanSurv$dss=="Alive or did not die from HN cancer",0,1)
@@ -94,19 +97,19 @@ reg_output_l<-lapply(cov_surv[,2:ncol(cov_surv)],function(x){regression_output(c
 
 reg_output_df<-do.call("rbind",reg_output_l)
 reg_output_df<-reg_output_df[-c(5,6),]
-out1<-regression_output(coxph(surv_objs$DC ~Site +stage + ecog, data = cov_surv,na.action = na.omit))
+#out1<-regression_output(coxph(surv_objs$DC ~Site +stage + ecog, data = cov_surv,na.action = na.omit))
 
 #out2<-regression_output(coxph(surv_objs$LCRdate ~ ecog + trt + Site,na.action = na.omit, data = Cov_Surv))
  
 #reg_output_mv<-regression_output(coxph(surv_objs$Living_date ~ stage + Site+age,data=cov_surv,na.action = na.omit))
 
-output_csv<-rbind(reg_output_df,reg_output_mv)
-output_csv<-round(output_csv,2)
-write.csv(output_csv,"DSS1.csv")
+#output_csv<-rbind(reg_output_df,reg_output_mv)
+#output_csv<-round(output_csv,2)
+#write.csv(output_csv,"DSS1.csv")
 #regression_output(coxph(surv_object~treatINT,data=SurvivalHND_trt))
 rownames(reg_output_df)<-c("Treatment Interruption(Yes vs No)","Hypopharynx","Larynx","Oral Cavity","Nasopharynx","Stage III/IV","Ecog1","ECOG II/III/IV","Age 80+","CCI 7+")
 
-names(suv_fits1)<-lapply(suv_fits,function(x){names(x)<-c("TI","Site","stage","ecog","age","CCI")}) # rename all the nested lists
+#names(suv_fits1)<-lapply(suv_fits,function(x){names(x)<-c("TI","Site","stage","ecog","age","CCI")}) # rename all the nested lists
 
 
 
