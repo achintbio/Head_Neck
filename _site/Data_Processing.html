@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Achintya Varma" />
+
+
+<title>TreatmentTolerability</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Project steps</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="Data_Processing.html">About</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">TreatmentTolerability</h1>
+<h4 class="author">Achintya Varma</h4>
+<h4 class="date">5/17/2019</h4>
+
+</div>
+
+
+<p>This Rmarkdown file is to study the effects of several patient characteristics of Head and Neck Cancer Patients and how they tolerate treatment corresponding to the characteristics in question. The investigators of this study are primarily interested in studying the difference of Treatment Tolerability across sites while controlling for factors such as ECOG(clincical score- ordrinal variable), age(coded as binary), treatment type(nominal with two variables combined, total= 2 x 2 levels), CCI, polypharmacy(binary), Potentially Inappropriate Medications(Binary),drinking history(ordinal), tobacco use(ordinal)</p>
+<p>General Format of an Rmarkdown file is the statistical analysis or the code is followed by comments from the person creating the file.</p>
+<p>We start the analysis by testing whether any of our covariates are correlated to each other, any correlation implies that our the estimation of the effect of our predictors on the the response will be biased and any inferences based on the general linear model are incorrect and needed to be assessed after removal of correlated variables. Since Site is the primary variable of interest clinically, we remove any variables correlated with Site</p>
+<pre class="r"><code>HND621 &lt;- read_excel(&quot;~/Desktop/CapstoneRevised/HND621.xlsx&quot;)
+
+f.test&lt;-function(x){
+  if(length(unique(x[[1]])) &gt;2 | length(unique(x[[2]]))&gt;2){
+    set.seed(1234)
+    f&lt;-fisher.test(x[[1]],x[[2]],simulate.p.value=T)
+  }
+  else{
+    f&lt;-fisher.test(x[[1]],x[[2]])
+  }
+  return(round(f$p.value,4))
+} 
+
+names_add&lt;-function(x){
+  null&lt;-&quot;&quot;
+  for(y in x){
+    
+  }
+}
+fisher_names&lt;-function(x){
+  stringr = &quot;&quot;
+  for(i in x){
+  
+    stringr = paste(stringr, &quot; &quot;, i)
+  }
+  return(stringr)
+}
+Variables&lt;-as.data.frame(cbind(HND621$record_id,HND621$site,HND621$ecog,HND621$cci_excel,HND621$stagefinal8,HND621$interruption,HND621$age_at_rt_start))
+
+colnames(Variables)&lt;-c(&quot;rec_id&quot;,&quot;site&quot;,&quot;ecog&quot;,&quot;cci&quot;,&quot;stage&quot;,&quot;interruption&quot;,&quot;age&quot;)
+ 
+names_c&lt;-colnames(Variables)
+# code to convert site numbers to site list
+site_names&lt;-list(&quot;1&quot;=&quot;Larynx&quot;,&quot;2&quot;=&quot;Lip+Oral&quot;,&quot;3&quot;=&quot;Major_Salivary_Glands&quot;,&quot;4&quot;=&quot;Nasopharynx&quot;,&quot;5&quot;=&quot;Oropharynx&quot;,&quot;6&quot;=&quot;Hypopharynx&quot;,&quot;7&quot;=&quot;Nasal_Sinuses&quot;)
+
+Variables&lt;-cbind(Variables,t(as.data.frame(site_names[Variables$site]))) #uses the list above to convert the &quot;numeric&quot; values of the tumor sites to character type
+                 
+colnames(Variables)&lt;-c(names_c,&quot;site_name&quot;)
+#remove Major Salivary Glands and Nasal Sinuse
+Variables1&lt;-Variables[Variables$site_name!=&quot;Major_Salivary_Glands&quot;,]
+Variables&lt;-Variables1[Variables1$site_name!=&quot;Nasal_Sinuses&quot;,]
+Variables$site_name&lt;-droplevels(Variables)$site_name #drops tumor sites we are not interested in analyzing
+Variables$site_name&lt;-relevel(Variables$site_name,ref=&quot;Oropharynx&quot;) #Sets the reference to the biggest site in our dataset
+Variables$cci&lt;-ifelse(Variables$cci&gt;6,7,ifelse(Variables$cci&gt;5,6,5)) #Cci greater than 7 is counted as one category
+Variables$ecog&lt;-ifelse(Variables$ecog&gt;1,2,ifelse(Variables$ecog&gt;0,1,0))#Ecog higher than 2 is counted as a single score
+
+Variables$age_cat&lt;-ifelse(Variables$age&gt;80,1,0) #Categorizing age into 80+ vs 70-80
+Variables$stage&lt;-ifelse(Variables$stage&gt;1,1,0)
+Variables&lt;-Variables[,c(1,3,4,5,6,8,9)] #Drops &quot;Site&quot; and &quot;age&quot; as we are interested in categorizing age and the character values of site
+head(Variables)</code></pre>
+<pre><code>##      rec_id ecog cci stage interruption  site_name age_cat
+## X1      105    1   7     0            1     Larynx       0
+## X5      113    1   6     0            0 Oropharynx       1
+## X1.1    239    1   6     0            1     Larynx       0
+## X5.1    242    2   7     1            1 Oropharynx       0
+## X1.2    322    1   6     0            0     Larynx       1
+## X5.2    385    1   5     1            0 Oropharynx       0</code></pre>
+<pre class="r"><code>Variables[,2:ncol(Variables)]&lt;-apply(Variables[,2:ncol(Variables)],2,as.character) #convert all the predictors to characters as it is helpful to have characters to conduct logistic regressions
+
+#a_tox&lt;-a_tox[a_tox$rec_id %in% Variables$rec_id,]# Make sure the data frame with all our response variables has the same rows as our dataframes with all the predictors, a_tox was defined in a different .r file from the same project and is in the workspace</code></pre>
+<p>The first correlation is f_rt_site, it is testing whether there is an association between a patient having a tumor in any one of the sites listed and the treatment they had to undergo, a p-value of 2.735e-11 is highly significant and shows that the two variables have a very high likelihood of being associated. For the sake of obtaining unbiased estimates of our regression it is advisable not to use both sites and radiation intent in building any models. mAge and Site are not correlated with a p value of 0.3182 for the fisher test.</p>
+<p>Site and Ecog have a simulated p value of 0.0109, the p value might not be big enough to warrant adjustment for covariance. Since Fisher’s test is strong in detecting in even minor associations, we could change the cut-off pvalues to a lower value such as 0.01, for the sake of continuity we should consider all assocations to be valid if the p-value is lower than that.</p>
+<p>We can utilize the apply family functions to see multiple correlations at the same time in a list. This is for the convenience of the programmer so you can skip reading the following chunk.</p>
+<pre class="r"><code>cov_mat&lt;-matrix(replicate(0,36),nrow=6,ncol=6)
+cov_mat_names&lt;-matrix(replicate(0,36),nrow=6,ncol=6)
+combos&lt;-combn(Variables[,2:ncol(Variables)],2)
+combos_df&lt;-as.data.frame(combos)
+combos_name&lt;-combn(Variables[,2:ncol(Variables)],2,function(x){names(x)})
+combos_name&lt;-apply(combos_name,2,fisher_names)
+#combos_t&lt;-combn(Variables[,2:ncol(Variables)],5)
+combos_p&lt;-lapply(combos_df,f.test)
+names(combos_p)&lt;-combos_name
+cov_mat[lower.tri(cov_mat)]&lt;-combos_p
+cov_mat_names[lower.tri(cov_mat)]&lt;-combos_name
+colnames(cov_mat)&lt;-c(&quot;ecog&quot;,&quot;cci&quot;,&quot;stage&quot;,&quot;interruption&quot;,&quot;site_name&quot;,&quot;age_cat&quot;)
+rownames(cov_mat)&lt;-colnames(cov_mat)
+
+
+#var_mod&lt;-inner_join(Variables,a_tox,by=&quot;rec_id&quot;)
+#musc_glm_mv&lt;-glm(musc~site_name+age_cat,data=var_mod,family=&quot;binomial&quot;)
+#print(pf_df)</code></pre>
+<p>The Code following prints out the correlations matrix tested with Fisher Test.</p>
+<p>We used Fisher’s test to test the associations between different predictors in our analysis as some of the cells might be too sparse to use Chi-Square tests.</p>
+<pre><code>##              ecog   cci    stage  interruption site_name age_cat
+## ecog         NULL   NULL   NULL   NULL         NULL      NULL   
+## cci          5e-04  NULL   NULL   NULL         NULL      NULL   
+## stage        5e-04  0.4988 NULL   NULL         NULL      NULL   
+## interruption 0.7221 0.2434 0.0067 NULL         NULL      NULL   
+## site_name    0.021  0.0665 0.0225 0.009        NULL      NULL   
+## age_cat      0.0315 5e-04  0.1189 0.4895       0.3188    NULL</code></pre>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
